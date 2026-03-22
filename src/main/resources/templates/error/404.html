@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Not Found')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container mt-5 text-center">
+    <h1 class="display-1 text-muted">404</h1>
+    <h2 class="mb-3">Page Not Found</h2>
+    <p class="text-muted mb-4" th:text="${message ?: 'The resource you are looking for does not exist.'}"></p>
+    <a th:href="@{/clubs}" class="btn btn-primary">&larr; Back to Clubs</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

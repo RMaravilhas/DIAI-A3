@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Delete Event')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="page-header">
+        <h1>Delete Event</h1>
+        <p class="text-muted">Are you sure you want to delete the following event?</p>
+    </div>
+
+    <dl class="row mb-4">
+        <dt class="col-sm-4">Name</dt>
+        <dd class="col-sm-8 fw-semibold" th:text="${event.name}"></dd>
+
+        <dt class="col-sm-4">Date</dt>
+        <dd class="col-sm-8" th:text="${#temporals.format(event.date, 'dd MMM yyyy')}"></dd>
+
+        <dt class="col-sm-4">Type</dt>
+        <dd class="col-sm-8" th:text="${event.type}"></dd>
+
+        <dt class="col-sm-4" th:if="${event.location != null}">Location</dt>
+        <dd class="col-sm-8" th:if="${event.location != null}" th:text="${event.location}"></dd>
+
+        <dt class="col-sm-4">Club</dt>
+        <dd class="col-sm-8" th:text="${club.name}"></dd>
+    </dl>
+
+    <form th:action="@{/clubs/{cid}/events/{eid}(cid=${club.id}, eid=${event.id})}" method="post">
+        <input type="hidden" name="_method" value="DELETE"/>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a th:href="@{/clubs/{cid}/events/{eid}(cid=${club.id}, eid=${event.id})}"
+               class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
