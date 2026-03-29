@@ -36,9 +36,7 @@
                       }">
                 </span>
             </td>
-            <td>
-                <span class="badge text-bg-light border" th:text="${entry.eventCount}"></span>
-            </td>
+            <td class="event-count" th:text="${entry.eventCount}"></td>
             <td>
                 <details>
                     <summary th:text="${#strings.abbreviate(entry.club.description, 50)}"></summary>

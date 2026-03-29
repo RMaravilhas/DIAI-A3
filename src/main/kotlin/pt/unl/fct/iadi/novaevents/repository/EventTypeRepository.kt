@@ -2,5 +2,8 @@ package pt.unl.fct.iadi.novaevents.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
 import pt.unl.fct.iadi.novaevents.model.EventType
+import java.util.Optional
 
-interface EventTypeRepository : JpaRepository<EventType, Long>
+interface EventTypeRepository : JpaRepository<EventType, Long> {
+    fun findByNameIgnoreCase(name: String): Optional<EventType>
+}

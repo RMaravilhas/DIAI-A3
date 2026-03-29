@@ -21,11 +21,11 @@ class EventService(
     fun findAllTypes(): List<EventType> = eventTypeRepository.findAll()
 
     fun findAll(
-        typeId: Long? = null,
+        typeName: String? = null,
         clubId: Long? = null,
         from: LocalDate? = null,
         to: LocalDate? = null
-    ): List<Event> = eventRepository.findFiltered(clubId, typeId, from, to)
+    ): List<Event> = eventRepository.findFiltered(clubId, typeName, from, to)
 
     fun findById(id: Long): Event =
         eventRepository.findById(id).orElseThrow {
@@ -43,9 +43,7 @@ class EventService(
         val club = clubRepository.findById(clubId).orElseThrow {
             NoSuchElementException("Club not found: $clubId")
         }
-        val type = eventTypeRepository.findById(dto.typeId!!).orElseThrow {
-            NoSuchElementException("Event type not found: ${dto.typeId}")
-        }
+        val type = resolveType(dto.type!!)
 
         val event = Event(
             club = club,
@@ -64,9 +62,7 @@ class EventService(
         checkNameUnique(name, excludeId = id)
 
         val event = findById(id)
-        val type = eventTypeRepository.findById(dto.typeId!!).orElseThrow {
-            NoSuchElementException("Event type not found: ${dto.typeId}")
-        }
+        val type = resolveType(dto.type!!)
 
         event.name = name
         event.date = dto.date!!
@@ -82,6 +78,11 @@ class EventService(
         if (!eventRepository.existsById(id)) throw NoSuchElementException("Event not found: $id")
         eventRepository.deleteById(id)
     }
+
+    private fun resolveType(typeName: String): EventType =
+        eventTypeRepository.findByNameIgnoreCase(typeName.trim()).orElseThrow {
+            NoSuchElementException("Event type not found: $typeName")
+        }
 
     private fun checkNameUnique(name: String, excludeId: Long?) {
         val duplicate = if (excludeId == null) {

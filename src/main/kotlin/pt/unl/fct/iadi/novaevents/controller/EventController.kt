@@ -19,20 +19,20 @@ class EventController(
 
     @GetMapping("/events")
     fun listEvents(
-        @RequestParam(required = false) typeId: Long?,
+        @RequestParam(required = false) type: String?,
         @RequestParam(required = false) clubId: Long?,
         @RequestParam(required = false) from: LocalDate?,
         @RequestParam(required = false) to: LocalDate?,
         model: Model
     ): String {
-        val events = eventService.findAll(typeId, clubId, from, to)
+        val events = eventService.findAll(type, clubId, from, to)
         val clubs = clubService.findAll()
         val allTypes = eventService.findAllTypes()
 
         model.addAttribute("events", events)
         model.addAttribute("clubs", clubs)
         model.addAttribute("allTypes", allTypes)
-        model.addAttribute("selectedTypeId", typeId)
+        model.addAttribute("selectedType", type)
         model.addAttribute("selectedClubId", clubId)
         model.addAttribute("selectedFrom", from)
         model.addAttribute("selectedTo", to)
@@ -114,7 +114,7 @@ class EventController(
                 name = event.name,
                 date = event.date,
                 location = event.location,
-                typeId = event.type.id,
+                type = event.type.name,
                 description = event.description
             ))
         }

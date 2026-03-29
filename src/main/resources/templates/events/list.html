@@ -17,12 +17,12 @@
             <form method="get" th:action="@{/events}" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label for="filterType" class="form-label">Event Type</label>
-                    <select id="filterType" name="typeId" class="form-select">
-                        <option value="" th:selected="${selectedTypeId == null}">All types</option>
+                    <select id="filterType" name="type" class="form-select">
+                        <option value="" th:selected="${selectedType == null}">All types</option>
                         <option th:each="t : ${allTypes}"
-                                th:value="${t.id}"
+                                th:value="${t.name}"
                                 th:text="${t.name}"
-                                th:selected="${selectedTypeId == t.id}">
+                                th:selected="${selectedType == t.name}">
                         </option>
                     </select>
                 </div>

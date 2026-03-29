@@ -44,20 +44,20 @@
 
         <!-- Event Type -->
         <div class="mb-3">
-            <label for="typeId" class="form-label">
+            <label for="type" class="form-label">
                 Event Type <span class="text-danger">*</span>
             </label>
-            <select id="typeId" th:field="*{typeId}"
+            <select id="type" th:field="*{type}"
                     class="form-select"
-                    th:classappend="${#fields.hasErrors('typeId')} ? 'is-invalid'">
+                    th:classappend="${#fields.hasErrors('type')} ? 'is-invalid'">
                 <option value="">— Select type —</option>
                 <option th:each="t : ${allTypes}"
-                        th:value="${t.id}"
+                        th:value="${t.name}"
                         th:text="${t.name}">
                 </option>
             </select>
-            <div class="invalid-feedback" th:if="${#fields.hasErrors('typeId')}"
-                 th:errors="*{typeId}"></div>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('type')}"
+                 th:errors="*{type}"></div>
         </div>
 
         <!-- Location (optional) -->
