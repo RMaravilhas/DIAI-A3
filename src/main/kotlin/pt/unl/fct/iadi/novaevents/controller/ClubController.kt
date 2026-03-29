@@ -17,7 +17,7 @@ class ClubController(
 
     @GetMapping("")
     fun listClubs(model: Model): String {
-        model.addAttribute("clubsWithCount", clubService.findAllWithEventCount())
+        model.addAttribute("clubs", clubService.findAll())
         return "clubs/list"
     }
 
