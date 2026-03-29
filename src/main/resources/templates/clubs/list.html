@@ -15,34 +15,38 @@
         <tr>
             <th>Name</th>
             <th>Category</th>
+            <th>Events</th>
             <th>Description</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="club : ${clubs}">
-            <td th:text="${club.name}" class="fw-semibold"></td>
+        <tr th:each="entry : ${clubsWithCount}">
+            <td th:text="${entry.club.name}" class="fw-semibold"></td>
             <td>
-                <span th:text="${club.category}"
+                <span th:text="${entry.club.category}"
                       class="badge badge-category"
                       th:classappend="${
-                          club.category.name() == 'TECHNOLOGY' ? 'text-bg-primary' :
-                          club.category.name() == 'ARTS'       ? 'text-bg-warning' :
-                          club.category.name() == 'SPORTS'     ? 'text-bg-success' :
-                          club.category.name() == 'ACADEMIC'   ? 'text-bg-info' :
-                          club.category.name() == 'SOCIAL'     ? 'text-bg-secondary' :
-                                                                  'text-bg-dark'
+                          entry.club.category.name() == 'TECHNOLOGY' ? 'text-bg-primary' :
+                          entry.club.category.name() == 'ARTS'       ? 'text-bg-warning' :
+                          entry.club.category.name() == 'SPORTS'     ? 'text-bg-success' :
+                          entry.club.category.name() == 'ACADEMIC'   ? 'text-bg-info' :
+                          entry.club.category.name() == 'SOCIAL'     ? 'text-bg-secondary' :
+                                                                        'text-bg-dark'
                       }">
                 </span>
             </td>
             <td>
+                <span class="badge text-bg-light border" th:text="${entry.eventCount}"></span>
+            </td>
+            <td>
                 <details>
-                    <summary th:text="${#strings.abbreviate(club.description, 50)}"></summary>
-                    <p class="mt-2 text-muted" th:text="${club.description}"></p>
+                    <summary th:text="${#strings.abbreviate(entry.club.description, 50)}"></summary>
+                    <p class="mt-2 text-muted" th:text="${entry.club.description}"></p>
                 </details>
             </td>
             <td>
-                <a th:href="@{/clubs/{id}(id=${club.id})}" class="btn btn-sm btn-primary">View Details</a>
+                <a th:href="@{/clubs/{id}(id=${entry.club.id})}" class="btn btn-sm btn-primary">View Details</a>
             </td>
         </tr>
         </tbody>

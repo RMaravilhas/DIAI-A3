@@ -7,7 +7,6 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFormDto
-import pt.unl.fct.iadi.novaevents.model.EventType
 import pt.unl.fct.iadi.novaevents.service.ClubService
 import pt.unl.fct.iadi.novaevents.service.EventService
 import java.time.LocalDate
@@ -18,21 +17,22 @@ class EventController(
     private val clubService: ClubService
 ) {
 
-
     @GetMapping("/events")
     fun listEvents(
-        @RequestParam(required = false) type: EventType?,
+        @RequestParam(required = false) typeId: Long?,
         @RequestParam(required = false) clubId: Long?,
         @RequestParam(required = false) from: LocalDate?,
         @RequestParam(required = false) to: LocalDate?,
         model: Model
     ): String {
-        val events = eventService.findAll(type, clubId, from, to)
+        val events = eventService.findAll(typeId, clubId, from, to)
         val clubs = clubService.findAll()
+        val allTypes = eventService.findAllTypes()
+
         model.addAttribute("events", events)
         model.addAttribute("clubs", clubs)
-        model.addAttribute("allTypes", EventType.values())
-        model.addAttribute("selectedType", type)
+        model.addAttribute("allTypes", allTypes)
+        model.addAttribute("selectedTypeId", typeId)
         model.addAttribute("selectedClubId", clubId)
         model.addAttribute("selectedFrom", from)
         model.addAttribute("selectedTo", to)
@@ -65,7 +65,7 @@ class EventController(
         if (!model.containsAttribute("eventForm")) {
             model.addAttribute("eventForm", EventFormDto())
         }
-        model.addAttribute("allTypes", EventType.values())
+        model.addAttribute("allTypes", eventService.findAllTypes())
         model.addAttribute("formAction", "/clubs/$clubId/events")
         model.addAttribute("httpMethod", "POST")
         model.addAttribute("pageTitle", "New Event")
@@ -93,7 +93,7 @@ class EventController(
 
         val club = clubService.findById(clubId)
         model.addAttribute("club", club)
-        model.addAttribute("allTypes", EventType.values())
+        model.addAttribute("allTypes", eventService.findAllTypes())
         model.addAttribute("formAction", "/clubs/$clubId/events")
         model.addAttribute("httpMethod", "POST")
         model.addAttribute("pageTitle", "New Event")
@@ -114,13 +114,13 @@ class EventController(
                 name = event.name,
                 date = event.date,
                 location = event.location,
-                type = event.type,
+                typeId = event.type.id,
                 description = event.description
             ))
         }
         model.addAttribute("club", club)
         model.addAttribute("event", event)
-        model.addAttribute("allTypes", EventType.values())
+        model.addAttribute("allTypes", eventService.findAllTypes())
         model.addAttribute("formAction", "/clubs/$clubId/events/$eventId")
         model.addAttribute("httpMethod", "PUT")
         model.addAttribute("pageTitle", "Edit Event")
@@ -152,7 +152,7 @@ class EventController(
         val event = eventService.findById(eventId)
         model.addAttribute("club", club)
         model.addAttribute("event", event)
-        model.addAttribute("allTypes", EventType.values())
+        model.addAttribute("allTypes", eventService.findAllTypes())
         model.addAttribute("formAction", "/clubs/$clubId/events/$eventId")
         model.addAttribute("httpMethod", "PUT")
         model.addAttribute("pageTitle", "Edit Event")
