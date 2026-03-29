@@ -2,6 +2,7 @@ package pt.unl.fct.iadi.novaevents.service
 
 import org.springframework.stereotype.Service
 import pt.unl.fct.iadi.novaevents.model.Club
+import pt.unl.fct.iadi.novaevents.repository.ClubEventCountView
 import pt.unl.fct.iadi.novaevents.repository.ClubRepository
 import java.util.NoSuchElementException
 
@@ -13,10 +14,10 @@ class ClubService(private val clubRepository: ClubRepository) {
     fun findAll(): List<Club> = clubRepository.findAll()
 
     fun findAllWithEventCount(): List<ClubWithEventCount> =
-        clubRepository.findAllWithEventCount().map { row ->
+        clubRepository.findAllWithEventCount().map { view ->
             ClubWithEventCount(
-                club = row[0] as Club,
-                eventCount = row[1] as Long
+                club = view.getClub(),
+                eventCount = view.getEventCount()
             )
         }
 
