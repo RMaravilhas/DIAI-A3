@@ -14,6 +14,9 @@ interface EventRepository : JpaRepository<Event, Long> {
     /** Used when editing: same uniqueness check but excludes the event being edited. */
     fun existsByNameIgnoreCaseAndIdNot(name: String, id: Long): Boolean
 
+    /** Count events for a given club — used to populate the clubs list event count. */
+    fun countByClubId(clubId: Long): Long
+
     /**
      * Used on the club detail page — events belonging to a single club, sorted by date.
      * JOIN FETCH avoids N+1 when rendering type badges.
