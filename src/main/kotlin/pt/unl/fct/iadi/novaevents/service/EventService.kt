@@ -8,6 +8,9 @@ import pt.unl.fct.iadi.novaevents.model.EventType
 import pt.unl.fct.iadi.novaevents.repository.ClubRepository
 import pt.unl.fct.iadi.novaevents.repository.EventRepository
 import pt.unl.fct.iadi.novaevents.repository.EventTypeRepository
+import pt.unl.fct.iadi.novaevents.repository.UserRepository
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.context.SecurityContextHolder
 import java.time.LocalDate
 import java.util.NoSuchElementException
 
@@ -15,7 +18,8 @@ import java.util.NoSuchElementException
 class EventService(
     private val eventRepository: EventRepository,
     private val clubRepository: ClubRepository,
-    private val eventTypeRepository: EventTypeRepository
+    private val eventTypeRepository: EventTypeRepository,
+    private val userRepository: UserRepository
 ) {
 
     fun findAllTypes(): List<EventType> = eventTypeRepository.findAll()
@@ -45,18 +49,26 @@ class EventService(
         }
         val type = resolveType(dto.type!!)
 
+        val auth = SecurityContextHolder.getContext().authentication
+        val username = auth?.name ?: throw IllegalStateException("No authenticated user")
+        val owner = userRepository.findByUsernameIgnoreCase(username).orElseThrow {
+            NoSuchElementException("User not found: $username")
+        }
+
         val event = Event(
             club = club,
             name = name,
             date = dto.date!!,
             location = dto.location?.takeIf { it.isNotBlank() },
             type = type,
-            description = dto.description?.takeIf { it.isNotBlank() }
+            description = dto.description?.takeIf { it.isNotBlank() },
+            owner = owner
         )
         return eventRepository.save(event)
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isEventOwner(authentication.name, #id)")
     fun update(id: Long, dto: EventFormDto): Event {
         val name = dto.name!!.trim()
         checkNameUnique(name, excludeId = id)
@@ -74,6 +86,7 @@ class EventService(
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isEventOwner(authentication.name, #id)")
     fun delete(id: Long) {
         if (!eventRepository.existsById(id)) throw NoSuchElementException("Event not found: $id")
         eventRepository.deleteById(id)

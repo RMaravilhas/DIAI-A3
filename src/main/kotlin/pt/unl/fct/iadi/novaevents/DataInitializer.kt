@@ -12,16 +12,41 @@ import pt.unl.fct.iadi.novaevents.repository.EventRepository
 import pt.unl.fct.iadi.novaevents.repository.EventTypeRepository
 import java.time.LocalDate
 
+import org.springframework.security.crypto.password.PasswordEncoder
+import pt.unl.fct.iadi.novaevents.model.UserEntity
+import pt.unl.fct.iadi.novaevents.repository.UserRepository
+
 @Component
 class DataInitializer(
     private val eventTypeRepository: EventTypeRepository,
     private val clubRepository: ClubRepository,
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ) : ApplicationRunner {
 
     override fun run(args: ApplicationArguments) {
         // Guard: skip seeding if data already exists
         if (clubRepository.count() > 0) return
+
+        // ── Users ────────────────────────────────────────────────────────────
+        val alice = userRepository.save(UserEntity(
+            username = "alice",
+            passwordHash = passwordEncoder.encode("password123"),
+            roles = mutableListOf("ROLE_EDITOR")
+        ))
+        
+        val bob = userRepository.save(UserEntity(
+            username = "bob",
+            passwordHash = passwordEncoder.encode("password123"),
+            roles = mutableListOf("ROLE_EDITOR")
+        ))
+        
+        val charlie = userRepository.save(UserEntity(
+            username = "charlie",
+            passwordHash = passwordEncoder.encode("password123"),
+            roles = mutableListOf("ROLE_ADMIN")
+        ))
 
         // ── Event Types ──────────────────────────────────────────────────────
         val workshop    = eventTypeRepository.save(EventType(name = "WORKSHOP"))
@@ -71,84 +96,99 @@ class DataInitializer(
         ))
 
         // ── Events ───────────────────────────────────────────────────────────
-        // Chess Club (3 events)
+        // Chess Club (3 events) - owner: alice
         eventRepository.save(Event(club = chess, name = "Beginner's Chess Workshop",
             date = LocalDate.of(2026, 3, 10), location = "Room A101", type = workshop,
-            description = "An introductory session covering basic rules, piece movement, and opening principles.")
+            description = "An introductory session covering basic rules, piece movement, and opening principles.",
+            owner = alice)
         ).also { chess.events.add(it) }
         
         eventRepository.save(Event(club = chess, name = "Spring Chess Tournament",
             date = LocalDate.of(2026, 4, 5), location = "Main Hall", type = competition,
-            description = "Our annual spring tournament — all skill levels welcome. Swiss format, 5 rounds.")
+            description = "Our annual spring tournament — all skill levels welcome. Swiss format, 5 rounds.",
+            owner = alice)
         ).also { chess.events.add(it) }
         
         eventRepository.save(Event(club = chess, name = "Advanced Openings Talk",
             date = LocalDate.of(2026, 5, 20), location = "Room A101", type = talk,
-            description = "Grandmaster-level discussion of the Sicilian Defence and King's Indian Attack.")
+            description = "Grandmaster-level discussion of the Sicilian Defence and King's Indian Attack.",
+            owner = alice)
         ).also { chess.events.add(it) }
 
-        // Robotics Club (4 events)
+        // Robotics Club (4 events) - owner: bob
         eventRepository.save(Event(club = robotics, name = "Arduino Intro Workshop",
             date = LocalDate.of(2026, 3, 15), location = "Engineering Lab 2", type = workshop,
-            description = "Hands-on introduction to Arduino: blinking LEDs, sensors, and servo motors.")
+            description = "Hands-on introduction to Arduino: blinking LEDs, sensors, and servo motors.",
+            owner = bob)
         ).also { robotics.events.add(it) }
         
         eventRepository.save(Event(club = robotics, name = "RoboCup Preparation Meeting",
             date = LocalDate.of(2026, 3, 28), location = "Engineering Lab 1", type = meeting,
-            description = "Team meeting to plan our strategy and task distribution for the upcoming RoboCup.")
+            description = "Team meeting to plan our strategy and task distribution for the upcoming RoboCup.",
+            owner = bob)
         ).also { robotics.events.add(it) }
         
         eventRepository.save(Event(club = robotics, name = "Sensor Integration Talk",
             date = LocalDate.of(2026, 4, 22), location = "Auditorium B", type = talk,
-            description = "Deep dive into integrating ultrasonic, IR, and LiDAR sensors in autonomous robots.")
+            description = "Deep dive into integrating ultrasonic, IR, and LiDAR sensors in autonomous robots.",
+            owner = bob)
         ).also { robotics.events.add(it) }
         
         eventRepository.save(Event(club = robotics, name = "Regional Robotics Competition",
             date = LocalDate.of(2026, 6, 1), location = "Sports Hall", type = competition,
-            description = "Regional qualifier for the national robotics championship.")
+            description = "Regional qualifier for the national robotics championship.",
+            owner = bob)
         ).also { robotics.events.add(it) }
 
-        // Photography Club (3 events)
+        // Photography Club (3 events) - owner: alice
         eventRepository.save(Event(club = photography, name = "Night Photography Workshop",
             date = LocalDate.of(2026, 3, 22), location = "Campus Rooftop", type = workshop,
-            description = "Learn long-exposure techniques: light painting, star trails, and cityscapes.")
+            description = "Learn long-exposure techniques: light painting, star trails, and cityscapes.",
+            owner = alice)
         ).also { photography.events.add(it) }
         
         eventRepository.save(Event(club = photography, name = "Portrait Photography Talk",
             date = LocalDate.of(2026, 4, 14), location = "Arts Studio 3", type = talk,
-            description = "Lighting setups, posing tips, and post-processing for stunning portraits.")
+            description = "Lighting setups, posing tips, and post-processing for stunning portraits.",
+            owner = alice)
         ).also { photography.events.add(it) }
         
         eventRepository.save(Event(club = photography, name = "Photo Walk & Social",
             date = LocalDate.of(2026, 5, 9), location = "Main Entrance", type = social,
-            description = "Casual photo walk around campus followed by a social gathering and photo review.")
+            description = "Casual photo walk around campus followed by a social gathering and photo review.",
+            owner = alice)
         ).also { photography.events.add(it) }
 
-        // Hiking & Outdoors Club (3 events)
+        // Hiking & Outdoors Club (3 events) - owner: charlie
         eventRepository.save(Event(club = hiking, name = "Serra da Arrábida Hike",
             date = LocalDate.of(2026, 3, 29), location = "Bus Stop Central", type = other,
-            description = "A scenic hike through Arrábida Natural Park, approximately 12 km. Bring water and sunscreen.")
+            description = "A scenic hike through Arrábida Natural Park, approximately 12 km. Bring water and sunscreen.",
+            owner = charlie)
         ).also { hiking.events.add(it) }
         
         eventRepository.save(Event(club = hiking, name = "Trail Safety Workshop",
             date = LocalDate.of(2026, 4, 8), location = "Room C205", type = workshop,
-            description = "Essential first aid, navigation, and safety protocols for outdoor hiking.")
+            description = "Essential first aid, navigation, and safety protocols for outdoor hiking.",
+            owner = charlie)
         ).also { hiking.events.add(it) }
         
         eventRepository.save(Event(club = hiking, name = "Spring Camping Trip",
             date = LocalDate.of(2026, 5, 15), location = "Bus Stop Central", type = social,
-            description = "Weekend camping trip to Sintra hills. All equipment provided. Limited spots.")
+            description = "Weekend camping trip to Sintra hills. All equipment provided. Limited spots.",
+            owner = charlie)
         ).also { hiking.events.add(it) }
 
-        // Film Society (2 events)
+        // Film Society (2 events) - owner: bob
         eventRepository.save(Event(club = film, name = "Kubrick Retrospective Screening",
             date = LocalDate.of(2026, 3, 18), location = "Cinema Room", type = social,
-            description = "Screening of '2001: A Space Odyssey' followed by a discussion on Kubrick's visual language.")
+            description = "Screening of '2001: A Space Odyssey' followed by a discussion on Kubrick's visual language.",
+            owner = bob)
         ).also { film.events.add(it) }
         
         eventRepository.save(Event(club = film, name = "Screenwriting Workshop",
             date = LocalDate.of(2026, 4, 30), location = "Arts Studio 1", type = workshop,
-            description = "Practical workshop on three-act structure, character arcs, and dialogue writing.")
+            description = "Practical workshop on three-act structure, character arcs, and dialogue writing.",
+            owner = bob)
         ).also { film.events.add(it) }
     }
 }
