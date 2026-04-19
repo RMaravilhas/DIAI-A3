@@ -15,7 +15,7 @@ class UserEntity(
     @Column(nullable = false)
     var passwordHash: String = "",
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "user_roles", joinColumns = [JoinColumn(name = "user_id")])
     @Column(name = "role")
     var roles: MutableList<String> = mutableListOf()

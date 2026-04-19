@@ -53,8 +53,8 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.GET, "/clubs/{clubId}/events/new", "/clubs/{clubId}/events/{eventId}/edit").hasAnyRole("EDITOR", "ADMIN")
                     .requestMatchers(HttpMethod.POST, "/clubs/{clubId}/events").hasAnyRole("EDITOR", "ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/clubs/{clubId}/events/{eventId}").hasAnyRole("EDITOR", "ADMIN")
-                    .requestMatchers("/clubs/{clubId}/events/{eventId}/delete").authenticated()
-                    .requestMatchers(HttpMethod.DELETE, "/clubs/{clubId}/events/{eventId}").authenticated()
+                    .requestMatchers("/clubs/{clubId}/events/{eventId}/delete").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/clubs/{clubId}/events/{eventId}").hasRole("ADMIN")
 
                     // Public endpoints evaluated after specific overrides
                     .requestMatchers("/", "/login", "/logout", "/error", "/css/**", "/js/**").permitAll()

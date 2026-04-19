@@ -4,6 +4,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import pt.unl.fct.iadi.novaevents.model.UserEntity
 import pt.unl.fct.iadi.novaevents.repository.UserRepository
 
@@ -12,6 +13,7 @@ class DomainUserDetailsService(
     private val userRepository: UserRepository
 ) : UserDetailsManager {
 
+    @Transactional(readOnly = true)
     override fun loadUserByUsername(username: String): UserDetails {
         val userEntity = userRepository.findByUsernameIgnoreCase(username).orElseThrow {
             UsernameNotFoundException("User not found: $username")
