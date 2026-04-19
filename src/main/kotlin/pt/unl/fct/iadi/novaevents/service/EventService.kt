@@ -68,7 +68,6 @@ class EventService(
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ADMIN') or @securityService.isEventOwner(authentication.name, #id)")
     fun update(id: Long, dto: EventFormDto): Event {
         val name = dto.name!!.trim()
         checkNameUnique(name, excludeId = id)
@@ -86,7 +85,6 @@ class EventService(
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ADMIN') or @securityService.isEventOwner(authentication.name, #id)")
     fun delete(id: Long) {
         if (!eventRepository.existsById(id)) throw NoSuchElementException("Event not found: $id")
         eventRepository.deleteById(id)

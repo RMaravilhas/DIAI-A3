@@ -6,6 +6,7 @@ import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import org.springframework.security.access.prepost.PreAuthorize
 import pt.unl.fct.iadi.novaevents.controller.dto.EventFormDto
 import pt.unl.fct.iadi.novaevents.service.ClubService
 import pt.unl.fct.iadi.novaevents.service.EventService
@@ -26,7 +27,7 @@ class EventController(
         model: Model
     ): String {
         val events = eventService.findAll(type, clubId, from, to)
-        val clubs = clubService.findAll()
+        val clubs = clubService.findAllBasic()
         val allTypes = eventService.findAllTypes()
 
         model.addAttribute("events", events)
@@ -102,6 +103,7 @@ class EventController(
 
 
     @GetMapping("/clubs/{clubId}/events/{eventId}/edit")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isEventOwner(authentication.name, #eventId)")
     fun showEditForm(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
@@ -128,6 +130,7 @@ class EventController(
     }
 
     @PutMapping("/clubs/{clubId}/events/{eventId}")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isEventOwner(authentication.name, #eventId)")
     fun updateEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
@@ -161,6 +164,7 @@ class EventController(
 
 
     @GetMapping("/clubs/{clubId}/events/{eventId}/delete")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isEventOwner(authentication.name, #eventId)")
     fun showDeleteConfirmation(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
@@ -174,6 +178,7 @@ class EventController(
     }
 
     @DeleteMapping("/clubs/{clubId}/events/{eventId}")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isEventOwner(authentication.name, #eventId)")
     fun deleteEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long

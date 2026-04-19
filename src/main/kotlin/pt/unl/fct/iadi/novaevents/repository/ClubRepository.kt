@@ -11,6 +11,6 @@ interface ClubRepository : JpaRepository<Club, Long> {
      * DISTINCT prevents duplicated clubs when a club has multiple events.
      * This is the N+1-safe method for the clubs list page.
      */
-    @Query("SELECT DISTINCT c FROM Club c LEFT JOIN FETCH c.events e LEFT JOIN FETCH e.type")
+    @Query("SELECT DISTINCT c FROM Club c LEFT JOIN FETCH c.events e LEFT JOIN FETCH e.type LEFT JOIN FETCH e.owner")
     fun findAllWithEvents(): List<Club>
 }

@@ -25,6 +25,7 @@ interface EventRepository : JpaRepository<Event, Long> {
         SELECT e FROM Event e
         JOIN FETCH e.type
         JOIN FETCH e.club
+        LEFT JOIN FETCH e.owner
         WHERE e.club.id = :clubId
         ORDER BY e.date ASC
     """)
@@ -40,6 +41,7 @@ interface EventRepository : JpaRepository<Event, Long> {
         SELECT e FROM Event e
         JOIN FETCH e.type t
         JOIN FETCH e.club c
+        LEFT JOIN FETCH e.owner
         WHERE (:clubId   IS NULL OR c.id   = :clubId)
           AND (:typeName IS NULL OR UPPER(t.name) = UPPER(:typeName))
           AND (:from     IS NULL OR e.date >= :from)

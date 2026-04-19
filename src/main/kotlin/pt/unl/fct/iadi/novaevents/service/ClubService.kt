@@ -11,6 +11,9 @@ class ClubService(private val clubRepository: ClubRepository) {
     /** Returns all clubs with their events eagerly fetched (single JOIN FETCH query). */
     fun findAll(): List<Club> = clubRepository.findAllWithEvents()
 
+    /** Returns all clubs without fetching their events eagerly. Useful for dropdowns. */
+    fun findAllBasic(): List<Club> = clubRepository.findAll()
+
     fun findById(id: Long): Club =
         clubRepository.findById(id).orElseThrow {
             NoSuchElementException("Club not found: $id")

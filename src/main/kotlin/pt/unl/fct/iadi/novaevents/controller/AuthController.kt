@@ -34,6 +34,7 @@ class AuthController(
     fun performLogin(
         @RequestParam username: String,
         @RequestParam password: String,
+        request: jakarta.servlet.http.HttpServletRequest,
         response: HttpServletResponse,
         model: Model
     ): String {
@@ -52,7 +53,11 @@ class AuthController(
             // Note: Secure flag should ideally be set in production
             response.addCookie(cookie)
             
-            return "redirect:/clubs"
+            val requestCache = org.springframework.security.web.savedrequest.CookieRequestCache()
+            val savedRequest = requestCache.getRequest(request, response)
+            val targetUrl = savedRequest?.redirectUrl ?: "/clubs"
+            
+            return "redirect:$targetUrl"
         } catch (e: AuthenticationException) {
             model.addAttribute("loginError", true)
             model.addAttribute("pageTitle", "Login")
