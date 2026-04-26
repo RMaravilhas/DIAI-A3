@@ -78,6 +78,6 @@ class TestWeatherController {
     @Test
     fun `unauthenticated access is denied`() {
         mockMvc.perform(get("/api/weather?location=Lisbon"))
-            .andExpect(status().isForbidden)
+            .andExpect(status().isUnauthorized)
     }
 }

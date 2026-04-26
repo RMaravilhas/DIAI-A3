@@ -53,7 +53,7 @@
                 
                 <!-- Authenticated Users -->
                 <li class="nav-item d-flex align-items-center" sec:authorize="isAuthenticated()">
-                    <span class="navbar-text me-3" id="navbar-username" sec:authentication="name">Username</span>
+                    <span class="navbar-text me-3 navbar-username" id="navbar-username" sec:authentication="name">Username</span>
                     <form th:action="@{/logout}" method="post" class="d-inline">
                         <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
                     </form>
