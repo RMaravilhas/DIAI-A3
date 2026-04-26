@@ -19,7 +19,8 @@ class EventService(
     private val eventRepository: EventRepository,
     private val clubRepository: ClubRepository,
     private val eventTypeRepository: EventTypeRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val weatherService: WeatherService
 ) {
 
     fun findAllTypes(): List<EventType> = eventTypeRepository.findAll()
@@ -55,6 +56,8 @@ class EventService(
             NoSuchElementException("User not found: $username")
         }
 
+        validateLocationAndWeather(dto.location, club.name)
+
         val event = Event(
             club = club,
             name = name,
@@ -74,6 +77,8 @@ class EventService(
 
         val event = findById(id)
         val type = resolveType(dto.type!!)
+
+        validateLocationAndWeather(dto.location, event.club.name)
 
         event.name = name
         event.date = dto.date!!
@@ -102,5 +107,16 @@ class EventService(
             eventRepository.existsByNameIgnoreCaseAndIdNot(name, excludeId)
         }
         if (duplicate) throw IllegalArgumentException("An event with this name already exists")
+    }
+
+    private fun validateLocationAndWeather(location: String?, clubName: String) {
+        if (clubName == "Hiking & Outdoors Club") {
+            if (location.isNullOrBlank()) {
+                throw IllegalArgumentException("Location is required for outdoor events")
+            }
+            if (weatherService.isRaining(location) == true) {
+                throw IllegalArgumentException("It is currently raining at \"$location\" — outdoor events cannot be created in bad weather")
+            }
+        }
     }
 }

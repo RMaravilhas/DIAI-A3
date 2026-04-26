@@ -63,9 +63,19 @@
         <!-- Location (optional) -->
         <div class="mb-3">
             <label for="location" class="form-label">Location</label>
-            <input type="text" id="location" th:field="*{location}"
-                   class="form-control"
-                   placeholder="e.g. Room A101 (optional)"/>
+            <div class="input-group">
+                <input type="text" id="location" name="location" th:field="*{location}"
+                       class="form-control"
+                       th:classappend="${#fields.hasErrors('location')} ? 'is-invalid'"
+                       placeholder="e.g. Room A101 (optional)"/>
+                <button type="button" class="btn btn-outline-info" id="check-weather-js">Check Weather JS</button>
+                <button type="button" class="btn btn-outline-info" 
+                        hx-get="/api/weather" 
+                        hx-include="#location"
+                        hx-target="#weather-result">Check Weather HTMX</button>
+            </div>
+            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></div>
+            <div id="weather-result" class="mt-2"></div>
         </div>
 
         <!-- Description (optional) -->
@@ -84,5 +94,35 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnJs = document.getElementById('check-weather-js');
+        const locationInput = document.getElementById('location');
+        const weatherResult = document.getElementById('weather-result');
+
+        if(btnJs) {
+            btnJs.addEventListener('click', () => {
+                const loc = locationInput.value;
+                if(!loc) return;
+                fetch(`/api/weather?location=${encodeURIComponent(loc)}`, {
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.raining === true) {
+                        weatherResult.innerHTML = '<span class="badge bg-warning text-dark">Raining</span>';
+                    } else if (data.raining === false) {
+                        weatherResult.innerHTML = '<span class="badge bg-success">Clear</span>';
+                    } else {
+                        weatherResult.innerHTML = '<span class="text-secondary">Weather data unavailable.</span>';
+                    }
+                })
+                .catch(err => {
+                    weatherResult.innerHTML = '<span class="text-danger">Error fetching weather</span>';
+                });
+            });
+        }
+    });
+</script>
 </body>
 </html>

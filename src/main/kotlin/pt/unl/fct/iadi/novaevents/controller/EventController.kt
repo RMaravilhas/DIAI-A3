@@ -88,7 +88,11 @@ class EventController(
                 val event = eventService.create(dto, clubId)
                 return "redirect:/clubs/$clubId/events/${event.id}"
             } catch (e: IllegalArgumentException) {
-                bindingResult.rejectValue("name", "duplicate", e.message ?: "Duplicate name")
+                if (e.message == "Location is required for outdoor events" || e.message?.startsWith("It is currently raining") == true) {
+                    bindingResult.rejectValue("location", "invalid", e.message!!)
+                } else {
+                    bindingResult.rejectValue("name", "duplicate", e.message ?: "Duplicate name")
+                }
             }
         }
 
@@ -147,7 +151,11 @@ class EventController(
                 eventService.update(eventId, dto)
                 return "redirect:/clubs/$clubId/events/$eventId"
             } catch (e: IllegalArgumentException) {
-                bindingResult.rejectValue("name", "duplicate", e.message ?: "Duplicate name")
+                if (e.message == "Location is required for outdoor events" || e.message?.startsWith("It is currently raining") == true) {
+                    bindingResult.rejectValue("location", "invalid", e.message!!)
+                } else {
+                    bindingResult.rejectValue("name", "duplicate", e.message ?: "Duplicate name")
+                }
             }
         }
 

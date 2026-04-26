@@ -1,0 +1,11 @@
+<th:block xmlns:th="http://www.thymeleaf.org">
+    <th:block th:if="${raining == true}">
+        <span class="badge bg-warning text-dark">Raining</span>
+    </th:block>
+    <th:block th:if="${raining == false}">
+        <span class="badge bg-success">Clear</span>
+    </th:block>
+    <th:block th:if="${raining == null}">
+        <span class="text-secondary">Weather data unavailable.</span>
+    </th:block>
+</th:block>
